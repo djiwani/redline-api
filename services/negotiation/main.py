@@ -103,13 +103,22 @@ Respond ONLY with valid JSON in this exact format:
             text = text[4:]
     parsed = json.loads(text.strip())
 
+    # Hard enforce budget ceiling - never offer or agree above budget
+    if parsed.get("offer_price", 0) > buyer_budget:
+        parsed["offer_price"] = buyer_budget
+        parsed["deal_reached"] = False
+        parsed["agreed_price"] = None
+
     # Hard enforcement: never let buyer accept below their own best offer
     if parsed.get("deal_reached") and parsed.get("agreed_price"):
-        if parsed["agreed_price"] < best_buyer_offer:
+        if parsed["agreed_price"] > buyer_budget:
+            parsed["deal_reached"] = False
+            parsed["agreed_price"] = None
+            parsed["offer_price"] = buyer_budget
+        elif parsed["agreed_price"] < best_buyer_offer:
             parsed["deal_reached"] = False
             parsed["agreed_price"] = None
             parsed["offer_price"] = best_buyer_offer
-            parsed["message"] = parsed["message"] + " (I need at least my previous offer price.)"
 
     return parsed
 
