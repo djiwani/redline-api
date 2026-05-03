@@ -13,9 +13,11 @@ app = FastAPI(title="Redline Negotiation Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["https://redline.fourallthedogs.com"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
