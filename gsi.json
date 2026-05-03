@@ -1,0 +1,1 @@
+﻿[{"Create":{"IndexName":"user_id-index","KeySchema":[{"AttributeName":"user_id","KeyType":"HASH"},{"AttributeName":"session_id","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}}]
