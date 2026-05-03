@@ -396,3 +396,5 @@ def get_negotiation(session_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# CI/CD test
