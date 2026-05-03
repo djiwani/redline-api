@@ -1,0 +1,63 @@
+version: "3.8"
+
+# -------------------------------------------------------
+# LOCAL DEV ONLY
+# Runs all three services locally without EKS.
+# Uses environment variables instead of Secrets Manager.
+# Run: docker-compose up
+# -------------------------------------------------------
+services:
+
+  listings:
+    build:
+      context: ./services/listings
+    ports:
+      - "8001:8000"
+    environment:
+      - DB_SECRET_NAME=local
+      - AWS_REGION=us-east-1
+      - PORT=8000
+      # For local dev override — bypasses Secrets Manager
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=redline
+      - DB_USER=redline_admin
+      - DB_PASSWORD=localpassword
+
+  users:
+    build:
+      context: ./services/users
+    ports:
+      - "8002:8000"
+    environment:
+      - DB_SECRET_NAME=local
+      - AWS_REGION=us-east-1
+      - PORT=8000
+      - COGNITO_USER_POOL_ID=us-east-1_fGQUmd0nR
+      - COGNITO_CLIENT_ID=70jt4r4pe5kuehheombbrrkblu
+      - COGNITO_REGION=us-east-1
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=redline
+      - DB_USER=redline_admin
+      - DB_PASSWORD=localpassword
+
+  negotiation:
+    build:
+      context: ./services/negotiation
+    ports:
+      - "8003:8000"
+    environment:
+      - AWS_REGION=us-east-1
+      - PORT=8000
+      - DYNAMODB_TABLE=redline-negotiation-sessions
+      - SNS_DEAL_REACHED_ARN=arn:aws:sns:us-east-1:856888988892:redline-deal-reached
+      - SNS_NEGOTIATION_FAILED_ARN=arn:aws:sns:us-east-1:856888988892:redline-negotiation-failed
+      - BEDROCK_MODEL_ID=anthropic.claude-haiku-4-5
+      - MAX_ROUNDS=10
+      - DB_SECRET_NAME=local
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=redline
+      - DB_USER=redline_admin
+      - DB_PASSWORD=localpassword
